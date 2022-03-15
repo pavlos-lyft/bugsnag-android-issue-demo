@@ -1,6 +1,7 @@
 package com.example.bugsnag.android
 
 import android.app.Application
+import android.util.Log
 import com.bugsnag.android.Bugsnag
 import com.bugsnag.android.Configuration
 import com.bugsnag.android.ErrorType
@@ -30,6 +31,7 @@ class ExampleApplication : Application() {
 
             // FIXME: The issue is here
             // FIXME: If this is native crash - 'metadataToSend' will not contain 'list' and 'map' values.
+            Log.i("TEST_LOG", "Number of sent metadata items: ${metadataToSend?.size?.toString().orEmpty()}")
 
             true
         }
