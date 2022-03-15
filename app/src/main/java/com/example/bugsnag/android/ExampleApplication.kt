@@ -3,21 +3,17 @@ package com.example.bugsnag.android
 import android.app.Application
 import com.bugsnag.android.Bugsnag
 import com.bugsnag.android.Configuration
+import com.bugsnag.android.ErrorType
 import java.io.File
 
 class ExampleApplication : Application() {
 
     companion object {
         init {
-//            if you support API <= 17 you should uncomment this to load the bugsnag library
-//            before any libraries that link to it
-//            https://docs.bugsnag.com/platforms/android/#initialize-the-bugsnag-client
-//
-//            System.loadLibrary("bugsnag-ndk")
-//            System.loadLibrary("bugsnag-plugin-android-anr")
-
             System.loadLibrary("entrypoint")
         }
+
+        const val TEST_TAB = "TEST_TAB"
     }
 
     private external fun performNativeBugsnagSetup()
@@ -29,29 +25,28 @@ class ExampleApplication : Application() {
         config.setUser("123456", "joebloggs@example.com", "Joe Bloggs")
         config.addMetadata("user", "age", 31)
 
-        // Configure the persistence directory when running MultiProcessActivity in a separate
-        // process to ensure the two Bugsnag clients are independent
-//        val processName = findCurrentProcessName()
-//        if (processName.endsWith("secondaryprocess")) {
-//            config.persistenceDirectory = File(filesDir, processName)
-//        }
+        config.addOnSend { event ->
+            val metadataToSend = event.getMetadata(TEST_TAB)
+
+            // FIXME: The issue is here
+            // FIXME: If this is native crash - 'metadataToSend' will not contain 'list' and 'map' values.
+
+            true
+        }
 
         Bugsnag.start(this, config)
 
         // Initialise native callbacks
         performNativeBugsnagSetup()
 
-        // FIXME: Issue demo is HERE!
+        // FIXME, Issue: Metadata setup is here!
         setTestMetadata()
-
     }
 
     private fun setTestMetadata() {
-        val testTab = "TEST_TAB"
-
-        Bugsnag.addMetadata(testTab, "int", 42)
-        Bugsnag.addMetadata(testTab, "string", "value")
-        Bugsnag.addMetadata(testTab, "list", listOf("1", "2"))
-        Bugsnag.addMetadata(testTab, "map", mapOf("key1" to 1, "key2" to 2))
+        Bugsnag.addMetadata(TEST_TAB, "int", 42)
+        Bugsnag.addMetadata(TEST_TAB, "string", "value")
+        Bugsnag.addMetadata(TEST_TAB, "list", listOf("1", "2"))
+        Bugsnag.addMetadata(TEST_TAB, "map", mapOf("key1" to 1, "key2" to 2))
     }
 }
