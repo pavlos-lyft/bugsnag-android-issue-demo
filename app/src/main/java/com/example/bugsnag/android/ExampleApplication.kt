@@ -33,6 +33,8 @@ class ExampleApplication : Application() {
             // FIXME: If this is native crash - 'metadataToSend' will not contain 'list' and 'map' values.
             Log.i("TEST_LOG", "Number of sent metadata items: ${metadataToSend?.size?.toString().orEmpty()}")
 
+            event.addMetadata(TEST_TAB, "anotherLongValue", "123456789_123456789_123456789_123456789_123456789_123456789_123456789_")
+
             true
         }
 
@@ -43,12 +45,19 @@ class ExampleApplication : Application() {
 
         // FIXME, Issue: Metadata setup is here!
         setTestMetadata()
+        setTooLongMetadata()
     }
 
     private fun setTestMetadata() {
         Bugsnag.addMetadata(TEST_TAB, "int", 42)
         Bugsnag.addMetadata(TEST_TAB, "string", "value")
-        Bugsnag.addMetadata(TEST_TAB, "list", listOf("1", "2"))
-        Bugsnag.addMetadata(TEST_TAB, "map", mapOf("key1" to 1, "key2" to 2))
+        Bugsnag.addMetadata(TEST_TAB, "list", listOf("1", "2").toString())
+        Bugsnag.addMetadata(TEST_TAB, "map", mapOf("key1" to 1, "key2" to 2).toString())
+
+        Bugsnag.addFeatureFlag("TEST", "true")
+    }
+
+    private fun setTooLongMetadata() {
+        Bugsnag.addMetadata(TEST_TAB, "longValue", "123456789_123456789_123456789_123456789_123456789_123456789_123456789_")
     }
 }
